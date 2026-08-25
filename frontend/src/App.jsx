@@ -8,6 +8,7 @@ import OrdersTrackingPage from './pages/OrdersTrackingPage'
 import SimulationPage from './pages/SimulationPage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
 import AuthPage from './pages/AuthPage'
+import TestScenariosPage from './pages/TestScenariosPage'
 import { Sprout, Heart } from 'lucide-react'
 
 function Footer() {
@@ -83,6 +84,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/how-it-works" element={<HowItWorksPage />} />
+          <Route path="/test-scenarios" element={<TestScenariosPage />} />
+          <Route path="/benchmarks" element={<TestScenariosPage />} />
           <Route path="/farmer/recommend" element={<RecommendationFlowPage currentLang={currentLang} />} />
           <Route path="/farmer/orders" element={<OrdersTrackingPage />} />
           <Route path="/farmer/simulation" element={<SimulationPage />} />

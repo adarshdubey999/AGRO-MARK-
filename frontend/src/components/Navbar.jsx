@@ -17,7 +17,8 @@ import {
   ShoppingBag,
   FileText,
   Sliders,
-  Globe
+  Globe,
+  CheckSquare
 } from 'lucide-react'
 import { TRANSLATIONS } from '../services/mockData'
 
@@ -28,10 +29,11 @@ export default function Navbar({ currentLang, setCurrentLang, userRole, setUserR
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'How It Works', path: '/how-it-works' },
-    { name: 'Find Best Mandi (8-Step Flow)', path: '/farmer/recommend', highlight: true },
+    { name: '8-Step Mandi Flow', path: '/farmer/recommend', highlight: true },
+    { name: 'Mandatory Test Scenarios', path: '/test-scenarios', icon: CheckSquare },
     { name: 'Online Orders & Tracking', path: '/farmer/orders', icon: Truck },
     { name: 'What-If Simulator', path: '/farmer/simulation', icon: Sliders },
+    { name: 'How It Works', path: '/how-it-works' },
     { name: 'Admin Portal', path: '/admin/dashboard', isAdmin: true }
   ]
 
