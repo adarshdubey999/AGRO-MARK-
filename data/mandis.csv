@@ -1,0 +1,8 @@
+id,name,district,state,transport_rate_per_km,market_fee_percent,handling_fee_per_qtl
+mandi-lasalgaon,Lasalgaon APMC,Nashik,Maharashtra,12.50,1.00,20.00
+mandi-nashik,Nashik APMC,Nashik,Maharashtra,12.00,1.00,20.00
+mandi-pune,Pune APMC (Gultekdi),Pune,Maharashtra,13.50,1.20,25.00
+mandi-pimpalgaon,Pimpalgaon Baswant APMC,Nashik,Maharashtra,12.00,1.00,20.00
+mandi-azadpur,Azadpur Mandi,North Delhi,Delhi,16.00,1.50,30.00
+mandi-indore,Indore APMC,Indore,Madhya Pradesh,13.00,1.00,22.00
+mandi-kurnool,Kurnool APMC,Kurnool,Andhra Pradesh,12.50,1.00,20.00

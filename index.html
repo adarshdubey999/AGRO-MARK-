@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agro Mark | AI Agricultural Market Intelligence & Best-Market Recommendation System</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            agro: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              950: '#052e16',
+            },
+            harvest: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .glass-nav { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); }
+    @keyframes pulseGlow { 0%, 100% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.03); } }
+    .animate-glow { animation: pulseGlow 3s infinite ease-in-out; }
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: white !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased selection:bg-agro-500 selection:text-white">
+
+  <!-- TOP NAVIGATION -->
+  <header class="sticky top-0 z-50 glass-nav border-b border-slate-200/80 shadow-xs no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo -->
+        <a href="#" onclick="showTab('home')" class="flex items-center space-x-3 cursor-pointer">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-agro-600 to-agro-800 flex items-center justify-center text-white shadow-md shadow-agro-600/20">
+            <i data-lucide="sprout" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <span class="text-xl font-black tracking-tight text-agro-900">Agro<span class="text-harvest-600">Mark</span></span>
+              <span class="bg-agro-100 text-agro-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded border border-agro-200">AI</span>
+            </div>
+            <span class="block text-[9px] uppercase tracking-wider font-bold text-agro-600">Market Intelligence & Logistics</span>
+          </div>
+        </a>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center space-x-1 text-xs font-bold">
+          <button onclick="showTab('home')" id="nav-home" class="px-3.5 py-2 rounded-lg text-agro-700 bg-agro-50 transition">Home</button>
+          <button onclick="showTab('flow')" id="nav-flow" class="px-3.5 py-2 rounded-lg text-slate-600 hover:text-agro-700 hover:bg-slate-50 transition flex items-center space-x-1">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-agro-600"></i>
+            <span>8-Step Mandi Flow</span>
+          </button>
+          <button onclick="showTab('orders')" id="nav-orders" class="px-3.5 py-2 rounded-lg text-slate-600 hover:text-agro-700 hover:bg-slate-50 transition flex items-center space-x-1">
+            <i data-lucide="truck" class="w-3.5 h-3.5 text-agro-600"></i>
+            <span>Online Orders & Live GPS</span>
+          </button>
+          <button onclick="showTab('simulator')" id="nav-simulator" class="px-3.5 py-2 rounded-lg text-slate-600 hover:text-agro-700 hover:bg-slate-50 transition flex items-center space-x-1">
+            <i data-lucide="sliders" class="w-3.5 h-3.5 text-agro-600"></i>
+            <span>What-If Simulator</span>
+          </button>
+          <button onclick="showTab('admin')" id="nav-admin" class="px-3.5 py-2 rounded-lg text-slate-600 hover:text-indigo-700 hover:bg-slate-50 transition flex items-center space-x-1">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-600"></i>
+            <span>Admin Portal</span>
+          </button>
+        </nav>
+
+        <!-- Right Controls -->
+        <div class="flex items-center space-x-3">
+          <!-- Language Selector -->
+          <div class="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-bold">
+            <button onclick="setLanguage('en')" id="lang-en" class="px-2 py-0.5 rounded bg-white text-agro-800 shadow-xs">EN</button>
+            <button onclick="setLanguage('hi')" id="lang-hi" class="px-2 py-0.5 rounded text-slate-600">हिन्दी</button>
+            <button onclick="setLanguage('mr')" id="lang-mr" class="px-2 py-0.5 rounded text-slate-600">मराठी</button>
+          </div>
+
+          <!-- Direct Start CTA -->
+          <button onclick="showTab('flow')" class="hidden sm:inline-flex items-center px-4 py-2 text-xs font-extrabold text-white bg-agro-600 hover:bg-agro-700 rounded-xl shadow-md shadow-agro-600/20 transition">
+            <span>Find Best Market</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 ml-1.5"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ==================== VIEW 1: HOME LANDING ==================== -->
+    <div id="view-home" class="space-y-16">
+      
+      <!-- Hero Banner -->
+      <section class="bg-gradient-to-b from-agro-50/90 via-white to-slate-50 border border-agro-100 rounded-3xl p-8 sm:p-12 shadow-sm relative overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          
+          <div class="lg:col-span-7 space-y-6">
+            <div class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-agro-100 text-agro-800 border border-agro-200">
+              <i data-lucide="sparkles" class="w-4 h-4 mr-1.5 text-agro-600"></i>
+              SIH Hackathon Project &bull; AI Agricultural Intelligence
+            </div>
+
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
+              Sell Smarter.<br>
+              <span class="text-agro-700 underline decoration-harvest-400 decoration-4">Earn Better.</span>
+            </h1>
+
+            <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
+              An intelligent decision-support system for Indian farmers to calculate <strong class="text-slate-900">Estimated Net Return</strong> across APMC Mandis by factoring dynamic transport freight, vehicle capacity, moisture quality, and statutory mandi cess.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 pt-2">
+              <button onclick="showTab('flow')" class="inline-flex justify-center items-center px-7 py-4 text-base font-bold text-white bg-agro-600 hover:bg-agro-700 rounded-2xl shadow-xl shadow-agro-600/25 transition">
+                <span>Start 8-Step Farmer Journey</span>
+                <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
+              </button>
+              <button onclick="showTab('simulator')" class="inline-flex justify-center items-center px-6 py-4 text-base font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-2xl transition">
+                <span>What-If Simulator</span>
+              </button>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-3 gap-6 pt-6 border-t border-agro-200/60 max-w-lg">
+              <div>
+                <div class="text-2xl font-black text-agro-800">100%</div>
+                <div class="text-xs text-slate-500 font-medium">Transparent Formula</div>
+              </div>
+              <div>
+                <div class="text-2xl font-black text-agro-800">10+</div>
+                <div class="text-xs text-slate-500 font-medium">Major APMC Mandis</div>
+              </div>
+              <div>
+                <div class="text-2xl font-black text-agro-800">Gemini AI</div>
+                <div class="text-xs text-slate-500 font-medium">Guidance Engine</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Interactive Net Return Demo Card (Lasalgaon vs Pune) -->
+          <div class="lg:col-span-5">
+            <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-agro-100 space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center space-x-3">
+                  <span class="text-3xl">🧅</span>
+                  <div>
+                    <h4 class="font-black text-slate-900 text-sm">Interactive Net Return Formula</h4>
+                    <p class="text-xs text-slate-500">Nashik Farmer &bull; Onion Harvest</p>
+                  </div>
+                </div>
+                <span class="text-[10px] font-bold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200">
+                  Live Calculator
+                </span>
+              </div>
+
+              <!-- Quantity Slider -->
+              <div class="space-y-1.5">
+                <div class="flex justify-between text-xs font-bold text-slate-700">
+                  <span>Harvest Quantity:</span>
+                  <span id="hero-qty-label" class="text-agro-700 font-mono font-bold">50 Quintals (5,000 kg)</span>
+                </div>
+                <input type="range" min="10" max="150" step="10" value="50" id="hero-qty-slider" oninput="updateHeroDemo(this.value)" class="w-full accent-agro-600 cursor-pointer">
+              </div>
+
+              <!-- Winner Card (Lasalgaon) -->
+              <div class="p-4 rounded-2xl bg-agro-50 border-2 border-agro-600 shadow-sm relative">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="font-bold text-agro-900 text-sm">Lasalgaon APMC</span>
+                    <span class="text-[9px] bg-agro-600 text-white font-black px-1.5 py-0.5 rounded">RECOMMENDED</span>
+                  </div>
+                  <span class="text-xs text-slate-500">45 km away</span>
+                </div>
+                <div class="flex items-center justify-between mt-2 pt-2 border-t border-agro-200 text-xs">
+                  <div>
+                    <span class="text-slate-500 block text-[10px]">Spot: ₹2,450/q</span>
+                    <span id="hero-las-freight" class="text-slate-500 text-[10px]">Freight: -₹1,480</span>
+                  </div>
+                  <div class="text-right">
+                    <span id="hero-las-net" class="text-base font-black text-agro-800">₹1,19,795</span>
+                    <span class="text-[10px] text-agro-600 font-bold block">Estimated Net Return</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Misleading High Gross Market (Pune) -->
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 opacity-85">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="font-bold text-slate-800 text-sm">Pune APMC (Gultekdi)</span>
+                    <span class="text-[9px] bg-slate-200 text-slate-700 font-bold px-1.5 py-0.5 rounded">Higher Gross (+₹50/q)</span>
+                  </div>
+                  <span class="text-xs text-slate-400">210 km away</span>
+                </div>
+                <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-200 text-xs">
+                  <div>
+                    <span class="text-slate-500 block text-[10px]">Spot: ₹2,500/q</span>
+                    <span id="hero-pune-freight" class="text-red-500 text-[10px]">Freight: -₹6,480</span>
+                  </div>
+                  <div class="text-right">
+                    <span id="hero-pune-net" class="text-base font-semibold text-slate-700">₹1,15,456</span>
+                    <span id="hero-net-diff" class="text-[10px] text-red-500 font-bold block">-₹4,339 Lower Net</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI Rationale Quote -->
+              <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 flex items-start space-x-2">
+                <i data-lucide="bot" class="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5"></i>
+                <p>
+                  <strong>Gemini AI Rationale:</strong> Even though Pune offers ₹50/q more gross rate, the 210 km haul costs significantly more, reducing your take-home profit by over ₹4,000 compared to Lasalgaon!
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 8-Step Architecture Blueprint Grid -->
+      <section class="space-y-8">
+        <div class="text-center max-w-3xl mx-auto space-y-2">
+          <span class="text-xs font-extrabold text-agro-700 uppercase tracking-wider">System Architecture</span>
+          <h2 class="text-3xl font-black text-slate-900">Complete 8-Step Agricultural Intelligence Pipeline</h2>
+          <p class="text-slate-600 text-xs sm:text-sm">Derived directly from the SIH system architecture workflow diagram.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 hover:border-agro-400 transition">
+            <div class="w-10 h-10 rounded-xl bg-agro-100 text-agro-700 flex items-center justify-center font-bold">1</div>
+            <h3 class="font-bold text-slate-900 text-sm">1. Crop Selection</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Select commodity, variety, harvest quantity, and quality grade (A+ to C) with moisture tolerance.</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 hover:border-agro-400 transition">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">2</div>
+            <h3 class="font-bold text-slate-900 text-sm">2. Location & Logistics</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">GPS coordinates auto-detection, nearby APMC search, vehicle capacity and per-km freight computation.</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 hover:border-agro-400 transition">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">3</div>
+            <h3 class="font-bold text-slate-900 text-sm">3. Mandi Comparison</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Raw Agmarknet spot rates, daily arrival volumes in quintals, APMC cess %, and hamali labor charges.</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 hover:border-agro-400 transition">
+            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">4</div>
+            <h3 class="font-bold text-slate-900 text-sm">4. AI Analysis Engine</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Multi-factor neural weighting: price, freight, quality bonus, perishability decay, and take-home Net Return.</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 hover:border-agro-400 transition">
+            <div class="w-10 h-10 rounded-xl bg-harvest-100 text-harvest-700 flex items-center justify-center font-bold">5</div>
+            <h3 class="font-bold text-slate-900 text-sm">5. Best Market Rec</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Ranked leaderboard (🥇 Best, 🥈 2nd, 🥉 3rd) with extra profit deltas and Gemini AI plain-language rationales.</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 hover:border-agro-400 transition">
+            <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold">6</div>
+            <h3 class="font-bold text-slate-900 text-sm">6. Online Selling System</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Direct crop listing to verified APMC buyers with guaranteed tripartite escrow protection (20%-70%-10%).</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 hover:border-agro-400 transition">
+            <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">7</div>
+            <h3 class="font-bold text-slate-900 text-sm">7. Delivery Tracking</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Real-time GPS tracking route simulation, 5-stage milestone progression, and OTP payment authorization.</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 hover:border-agro-400 transition">
+            <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">8</div>
+            <h3 class="font-bold text-slate-900 text-sm">8. Farmer Report</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Printable executive dossier with itemized mathematical ledger, price charts, and PDF download.</p>
+          </div>
+        </div>
+
+        <div class="text-center pt-4">
+          <button onclick="showTab('flow')" class="inline-flex items-center px-8 py-4 bg-agro-600 hover:bg-agro-700 text-white font-bold text-sm rounded-2xl shadow-xl shadow-agro-600/20 transition">
+            <span>Launch 8-Step Interactive Pipeline</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ==================== VIEW 2: 8-STEP MANDI RECOMMENDATION FLOW ==================== -->
+    <div id="view-flow" class="hidden space-y-6">
+      
+      <!-- Stepper Header -->
+      <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm">
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-center" id="stepper-bar">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- STEP 1 CONTAINER -->
+      <div id="step-1-card" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span class="text-xs font-bold text-agro-700 uppercase">Step 1 of 8</span>
+            <h2 class="text-2xl font-black text-slate-900">Crop Selection & Harvest Details</h2>
+            <p class="text-xs text-slate-500">Choose commodity, harvest quantity, and quality grade.</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-agro-100 text-agro-700 flex items-center justify-center">
+            <i data-lucide="sprout" class="w-6 h-6"></i>
+          </div>
+        </div>
+
+        <!-- 1. Crops Grid -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-slate-700 uppercase">1. Select Commodity / Crop:</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3" id="crops-selector-grid">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- 2. Variety & Quantity -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700 uppercase">2. Select Variety:</label>
+            <div class="grid grid-cols-2 gap-2" id="varieties-selector-grid">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-bold text-slate-700 uppercase">3. Harvest Quantity:</label>
+              <div class="flex bg-slate-100 p-0.5 rounded-lg text-xs font-bold">
+                <button type="button" onclick="setQuantityUnit('quintal')" id="unit-btn-quintal" class="px-2.5 py-1 rounded bg-white text-agro-800 shadow-xs">Quintals</button>
+                <button type="button" onclick="setQuantityUnit('kg')" id="unit-btn-kg" class="px-2.5 py-1 rounded text-slate-600">Kg</button>
+                <button type="button" onclick="setQuantityUnit('ton')" id="unit-btn-ton" class="px-2.5 py-1 rounded text-slate-600">Tons</button>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <input type="number" id="input-quantity" value="50" min="1" max="10000" oninput="handleQuantityChange(this.value)" class="w-32 px-3.5 py-2 text-base font-bold border border-slate-300 rounded-xl focus:ring-2 focus:ring-agro-500">
+              <input type="range" id="range-quantity" value="50" min="5" max="200" step="5" oninput="handleQuantityChange(this.value)" class="flex-grow accent-agro-600 cursor-pointer">
+              <span id="quantity-kg-equiv" class="text-xs font-bold text-slate-600 whitespace-nowrap">= 5,000 kg</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Quality Grades -->
+        <div class="space-y-2 pt-2">
+          <label class="block text-xs font-bold text-slate-700 uppercase">4. Quality / Grade Selection:</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="grades-selector-grid">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-4 border-t border-slate-200">
+          <button onclick="goToStep(2)" class="inline-flex items-center px-6 py-3.5 bg-agro-600 hover:bg-agro-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition">
+            <span>Continue to Step 2: Location & Logistics</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 ml-1.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2 CONTAINER -->
+      <div id="step-2-card" class="hidden bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span class="text-xs font-bold text-agro-700 uppercase">Step 2 of 8</span>
+            <h2 class="text-2xl font-black text-slate-900">Location & Transport Fleet Selection</h2>
+            <p class="text-xs text-slate-500">Select farm origin and transport vehicle mode.</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center">
+            <i data-lucide="map-pin" class="w-6 h-6"></i>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700 uppercase">Farm District / Origin:</label>
+            <div class="grid grid-cols-2 gap-2" id="origin-selector-grid">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700">GPS Geolocation Telemetry</span>
+              <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded">GPS Active</span>
+            </div>
+            <p class="text-xs text-slate-500" id="gps-coords-text">20.3256° N, 74.2415° E (Chandwad, Nashik)</p>
+            <p class="text-xs text-slate-700"><strong>6 APMC Mandis</strong> detected within 150 km radius.</p>
+          </div>
+        </div>
+
+        <div class="space-y-2 pt-2">
+          <label class="block text-xs font-bold text-slate-700 uppercase">Select Transport Vehicle:</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="vehicles-selector-grid">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+          <button onclick="goToStep(1)" class="px-4 py-2.5 border border-slate-300 rounded-xl text-slate-700 font-bold text-xs hover:bg-slate-50">Back</button>
+          <button onclick="goToStep(3)" class="inline-flex items-center px-6 py-3.5 bg-agro-600 hover:bg-agro-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition">
+            <span>Continue to Step 3: Raw Mandi Comparison</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 ml-1.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3 CONTAINER -->
+      <div id="step-3-card" class="hidden bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span class="text-xs font-bold text-agro-700 uppercase">Step 3 of 8</span>
+            <h2 class="text-2xl font-black text-slate-900">Mandi Comparison (Raw Market Data)</h2>
+            <p class="text-xs text-slate-500">Live Agmarknet prices, daily arrivals, APMC taxes, and hamali fees.</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center">
+            <i data-lucide="scale" class="w-6 h-6"></i>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-2xl border border-slate-200">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="bg-slate-100 text-slate-700 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4">APMC Mandi</th>
+                <th class="py-3 px-3">State / District</th>
+                <th class="py-3 px-3">Spot Rate (₹/q)</th>
+                <th class="py-3 px-3">Arrival Volume</th>
+                <th class="py-3 px-3">APMC Cess</th>
+                <th class="py-3 px-3">Hamali / Labor</th>
+              </tr>
+            </thead>
+            <tbody id="raw-mandi-tbody" class="divide-y divide-slate-100">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+          <button onclick="goToStep(2)" class="px-4 py-2.5 border border-slate-300 rounded-xl text-slate-700 font-bold text-xs hover:bg-slate-50">Back</button>
+          <button onclick="runAiEngine()" class="inline-flex items-center px-6 py-3.5 bg-gradient-to-r from-agro-600 to-agro-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg transition">
+            <i data-lucide="cpu" class="w-4 h-4 mr-1.5"></i>
+            <span>Execute Step 4: AI Analysis Engine</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 ml-1.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 4 & 5 CONTAINER: BEST RECOMMENDATION LEADERBOARD -->
+      <div id="step-5-card" class="hidden space-y-6">
+        
+        <!-- Top Pick Hero Card -->
+        <div id="top-pick-hero" class="bg-gradient-to-br from-agro-900 via-slate-900 to-slate-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-agro-700/60 relative overflow-hidden">
+          <!-- Injected via JS -->
+        </div>
+
+        <!-- Top 3 Comparison Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="top-3-grid">
+          <!-- Injected via JS -->
+        </div>
+
+        <!-- Gemini AI Insights & Recharts Chart -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-6 bg-slate-900 text-white p-6 rounded-3xl border border-slate-800 shadow-sm space-y-4" id="gemini-ai-box">
+            <!-- Injected via JS -->
+          </div>
+          <div class="lg:col-span-6 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-slate-900 text-sm">3-Day ML Price Forecast Trajectory</h4>
+                <p class="text-[11px] text-slate-500">Historical modal rates + Scikit-Learn confidence band</p>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 bg-agro-100 text-agro-800 rounded-full">Scikit-Learn ML</span>
+            </div>
+            <div class="h-56">
+              <canvas id="priceForecastChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- STEP 6 CONTAINER: ONLINE SELLING SYSTEM -->
+      <div id="step-6-card" class="hidden bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span class="text-xs font-bold text-agro-700 uppercase">Step 6 of 8</span>
+            <h2 class="text-2xl font-black text-slate-900">Online Selling & Escrow Deal Lock</h2>
+            <p class="text-xs text-slate-500">Sell directly to verified APMC commission agents with tripartite escrow protection.</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center">
+            <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <!-- Buyer & Asking Price -->
+          <div class="lg:col-span-7 space-y-4">
+            <label class="block text-xs font-bold text-slate-700 uppercase">1. Choose Verified Buyer at <span id="deal-mandi-name">Lasalgaon APMC</span>:</label>
+            <div class="space-y-2.5" id="buyers-selector-list">
+              <!-- Injected via JS -->
+            </div>
+
+            <div class="pt-2 grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Farmer Name:</label>
+                <input type="text" id="deal-farmer-name" value="Adarsh Dubey" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-agro-500 font-bold">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Mobile (for OTP):</label>
+                <input type="text" id="deal-farmer-phone" value="+91 98765 43210" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-agro-500 font-mono font-bold">
+              </div>
+            </div>
+          </div>
+
+          <!-- Escrow Summary & Lock -->
+          <div class="lg:col-span-5 bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-4">
+            <h4 class="font-bold text-slate-900 text-sm">Digital Escrow Contract Summary</h4>
+            <div class="space-y-1.5 text-xs text-slate-600" id="deal-ledger-box">
+              <!-- Injected via JS -->
+            </div>
+
+            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-[11px] text-emerald-900 space-y-1">
+              <div class="font-bold flex items-center">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 mr-1 text-emerald-600"></i>
+                Tripartite Escrow Guarantee:
+              </div>
+              <p>20% advance locked on deal &bull; 70% upon truck dispatch &bull; 10% on OTP delivery confirmation.</p>
+            </div>
+
+            <button onclick="lockDealAndDispatch()" class="w-full py-3.5 bg-agro-600 hover:bg-agro-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
+              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+              <span>Confirm Order & Dispatch Truck</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 7 CONTAINER: LIVE DELIVERY TRACKING -->
+      <div id="step-7-card" class="hidden space-y-6">
+        <div id="tracking-component-container">
+          <!-- Injected via JS -->
+        </div>
+
+        <div class="flex items-center justify-between bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <div>
+            <h4 class="font-bold text-slate-900 text-base">Step 8: Official Farmer Intelligence Dossier</h4>
+            <p class="text-xs text-slate-500">View and print official government-compliant net return report.</p>
+          </div>
+          <button onclick="goToStep(8)" class="inline-flex items-center px-6 py-3 bg-agro-600 hover:bg-agro-700 text-white font-bold text-xs rounded-xl shadow-sm transition">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1.5"></i>
+            <span>Generate Step 8 Dossier</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 ml-1.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 8 CONTAINER: PRINTABLE DOSSIER -->
+      <div id="step-8-card" class="hidden space-y-6">
+        <div id="dossier-print-container">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== VIEW 3: ONLINE ORDERS & TRACKING HUB ==================== -->
+    <div id="view-orders" class="hidden space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+        <div>
+          <span class="text-xs font-bold text-agro-700 uppercase">Farmer Logistics</span>
+          <h2 class="text-2xl font-black text-slate-900">Active Shipments & Orders Hub</h2>
+          <p class="text-xs text-slate-500">Real-time GPS telemetry, transporter driver calls, and OTP payouts.</p>
+        </div>
+        <button onclick="showTab('flow')" class="px-4 py-2 bg-agro-600 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-agro-700">
+          + New Crop Listing
+        </button>
+      </div>
+
+      <div id="orders-hub-container">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- ==================== VIEW 4: WHAT-IF SIMULATOR ==================== -->
+    <div id="view-simulator" class="hidden space-y-6">
+      <div class="border-b border-slate-200 pb-4">
+        <span class="text-xs font-bold text-agro-700 uppercase">Scenario Analysis</span>
+        <h2 class="text-2xl font-black text-slate-900">What-If Market Scenario Simulator</h2>
+        <p class="text-xs text-slate-500">Simulate fuel price surges, quantity scaling, and grade improvements in real-time.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Controls -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+          <h3 class="font-bold text-slate-900 text-sm">Simulation Parameters</h3>
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700">Commodity:</label>
+            <select id="sim-crop" onchange="runSimulation()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl font-bold">
+              <option value="onion">Onion (कांदा)</option>
+              <option value="wheat">Wheat (गेहूं)</option>
+              <option value="rice">Paddy / Rice (धान)</option>
+              <option value="tomato">Tomato (टमाटर)</option>
+              <option value="cotton">Cotton (कपास)</option>
+              <option value="soybean">Soybean (सोयाबीन)</option>
+            </select>
+          </div>
+
+          <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 space-y-2">
+            <div class="flex justify-between text-xs font-bold text-amber-900">
+              <span>Diesel & Fuel Freight Surge:</span>
+              <span id="sim-fuel-label" class="font-mono">+0% Normal</span>
+            </div>
+            <input type="range" min="0.8" max="1.6" step="0.05" value="1.0" id="sim-fuel" oninput="runSimulation()" class="w-full accent-amber-600 cursor-pointer">
+            <div class="flex justify-between text-[10px] text-amber-700 font-medium">
+              <span>-20% Subsidized</span>
+              <span>Standard</span>
+              <span>+60% Fuel Hike</span>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs font-bold text-slate-700">
+              <span>Quantity (Quintals):</span>
+              <span id="sim-qty-label" class="font-mono text-agro-700">50 Qtl</span>
+            </div>
+            <input type="range" min="10" max="200" step="10" value="50" id="sim-qty" oninput="runSimulation()" class="w-full accent-agro-600 cursor-pointer">
+          </div>
+        </div>
+
+        <!-- Output -->
+        <div class="lg:col-span-7 space-y-4" id="sim-output-container">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== VIEW 5: ADMIN PORTAL ==================== -->
+    <div id="view-admin" class="hidden space-y-6">
+      <div class="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="bg-indigo-500/20 text-indigo-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-indigo-500/30">
+            Administrative Control Center
+          </span>
+          <h2 class="text-2xl font-black mt-1">Agro Mark Admin Portal</h2>
+          <p class="text-xs text-indigo-200">Manage Crops, APMC Mandis, Live Agmarknet Price Feeds & System Intelligence.</p>
+        </div>
+        <div class="flex space-x-2">
+          <button onclick="adminSyncFeeds()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center space-x-1">
+            <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+            <span>Sync Agmarknet API</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <h3 class="font-bold text-slate-900 text-base">Live Spot Rates & Feeds Editor</h3>
+        <div class="space-y-3" id="admin-prices-list">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-950 text-slate-400 py-10 border-t border-slate-900 no-print mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+      <div class="flex items-center space-x-2 text-white font-black text-base">
+        <div class="w-7 h-7 rounded-lg bg-agro-600 flex items-center justify-center">
+          <i data-lucide="sprout" class="w-4 h-4 text-white"></i>
+        </div>
+        <span>Agro<span class="text-harvest-400">Mark</span></span>
+      </div>
+      <p>&copy; 2026 Agro Mark. SIH AI Agricultural Market Intelligence & Best-Market Recommendation System.</p>
+      <p class="text-slate-600">"Sell Smarter. Earn Better."</p>
+    </div>
+  </footer>
+
+  <!-- ==================== CORE JAVASCRIPT LOGIC ==================== -->
+  <script>
+    // 1. DATASETS
+    const CROPS = [
+      { id: 'onion', name: 'Onion', hindiName: 'कांदा / प्याज', icon: '🧅', basePrice: 2450, varieties: ['Nashik Red', 'Garwa (Rabi)', 'White Onion'] },
+      { id: 'wheat', name: 'Wheat', hindiName: 'गेहूं', icon: '🌾', basePrice: 2320, varieties: ['Sharbati', 'Lokwan', 'HD-2967'] },
+      { id: 'rice', name: 'Paddy / Rice', hindiName: 'धान', icon: '🍚', basePrice: 2250, varieties: ['Basmati 1121', 'Sona Masoori', 'Kolam'] },
+      { id: 'tomato', name: 'Tomato', hindiName: 'टमाटर', icon: '🍅', basePrice: 1950, varieties: ['Hybrid Vaishali', 'Abhinav', 'Desi Local'] },
+      { id: 'cotton', name: 'Cotton', hindiName: 'कपास', icon: '☁️', basePrice: 7150, varieties: ['BT Cotton Hybrid', 'Shankar-6'] },
+      { id: 'soybean', name: 'Soybean', hindiName: 'सोयाबीन', icon: '🌱', basePrice: 4920, varieties: ['JS-335', 'JS-9560'] }
+    ];
+
+    const MANDIS = [
+      { id: 'mandi-lasalgaon', name: 'Lasalgaon APMC', district: 'Nashik', state: 'MH', lat: 20.1472, lng: 74.2268, ratePerKm: 12.5, feePct: 1.0, handling: 20, arrivals: 3500 },
+      { id: 'mandi-pimpalgaon', name: 'Pimpalgaon Baswant', district: 'Nashik', state: 'MH', lat: 20.1718, lng: 73.9856, ratePerKm: 12.0, feePct: 1.0, handling: 20, arrivals: 2800 },
+      { id: 'mandi-nashik', name: 'Nashik City APMC', district: 'Nashik', state: 'MH', lat: 19.9975, lng: 73.7898, ratePerKm: 12.0, feePct: 1.0, handling: 22, arrivals: 2100 },
+      { id: 'mandi-pune', name: 'Pune APMC (Gultekdi)', district: 'Pune', state: 'MH', lat: 18.4988, lng: 73.8647, ratePerKm: 14.0, feePct: 1.25, handling: 25, arrivals: 6200 },
+      { id: 'mandi-vashi', name: 'Mumbai APMC (Vashi)', district: 'Mumbai', state: 'MH', lat: 19.0760, lng: 72.9984, ratePerKm: 16.5, feePct: 1.5, handling: 32, arrivals: 9800 },
+      { id: 'mandi-azadpur', name: 'Azadpur Mandi', district: 'Delhi', state: 'DL', lat: 28.7088, lng: 77.1751, ratePerKm: 16.0, feePct: 1.5, handling: 30, arrivals: 14500 }
+    ];
+
+    const QUALITY_GRADES = [
+      { id: 'grade_a_plus', name: 'Grade A+ (Export)', mult: 1.10, badge: '+10% Bonus', desc: 'Optimal moisture (<10%), zero defects.' },
+      { id: 'grade_a', name: 'Grade A (Superior)', mult: 1.05, badge: '+5% Bonus', desc: 'Standard grading, clean sort.' },
+      { id: 'grade_b', name: 'Grade B (Standard/FAQ)', mult: 1.00, badge: 'Base Rate', desc: 'Fair Average Quality specifications.' },
+      { id: 'grade_c', name: 'Grade C (Commercial)', mult: 0.90, badge: '-10% Disc', desc: 'Mixed sizing, higher moisture.' }
+    ];
+
+    const VEHICLES = [
+      { id: 'mini_truck', name: 'Tata Ace (Chota Hathi)', capQtl: 15, rateKm: 12, icon: '🛻', base: 300 },
+      { id: 'pickup', name: 'Mahindra Bolero Maxi', capQtl: 30, rateKm: 15, icon: '🚙', base: 500 },
+      { id: 'tractor', name: 'Tractor Trolley', capQtl: 50, rateKm: 11, icon: '🚜', base: 400 },
+      { id: 'medium_truck', name: '14ft Eicher Pro', capQtl: 80, rateKm: 20, icon: '🚚', base: 900 }
+    ];
+
+    const BUYERS = [
+      { id: 'b1', name: 'Kisan Agro Traders & Commission Agents', lic: 'MH-NSK-APMC-7842', rating: 4.9, speed: 'Instant UPI on Delivery' },
+      { id: 'b2', name: 'Maha Agri Exports Pvt Ltd', lic: 'MH-NSK-EXP-9011', rating: 4.8, speed: 'Direct Bank NEFT (2 Hrs)' },
+      { id: 'b3', name: 'Pimpalgaon Farmer Producer Co (FPO)', lic: 'MH-NSK-FPO-1044', rating: 4.9, speed: 'Direct Escrow Settlement' }
+    ];
+
+    // 2. ACTIVE APPLICATION STATE
+    let state = {
+      currentStep: 1,
+      cropId: 'onion',
+      variety: 'Garwa (Rabi)',
+      quantityQtl: 50,
+      gradeId: 'grade_a',
+      origin: { name: 'Chandwad, Nashik (MH)', lat: 20.3256, lng: 74.2415 },
+      vehicleId: 'pickup',
+      analysisResult: null,
+      selectedMandiDeal: null,
+      activeOrder: {
+        id: 'AGRO-ORD-2026-881',
+        cropName: 'Onion (कांदा)',
+        quantityQtl: 50,
+        mandiName: 'Lasalgaon APMC',
+        netPayout: 119795,
+        driverName: 'Rameshwar Patil',
+        driverPhone: '+91 97654 32100',
+        vehicleNo: 'MH 15 EG 4492',
+        otpCode: '4829',
+        status: 'IN_TRANSIT'
+      }
+    };
+
+    let chartInstance = null;
+
+    // 3. NAVIGATION TABS
+    function showTab(tabId) {
+      ['home', 'flow', 'orders', 'simulator', 'admin'].forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        const btn = document.getElementById(`nav-${t}`);
+        if (btn) {
+          btn.classList.remove('text-agro-700', 'bg-agro-50', 'text-indigo-700', 'bg-indigo-50');
+          btn.classList.add('text-slate-600');
+        }
+      });
+
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`nav-${tabId}`);
+      if (activeBtn) {
+        activeBtn.classList.add(tabId === 'admin' ? 'text-indigo-700' : 'text-agro-700', tabId === 'admin' ? 'bg-indigo-50' : 'bg-agro-50');
+      }
+
+      if (tabId === 'flow') renderStepUI();
+      if (tabId === 'orders') renderOrdersHub();
+      if (tabId === 'simulator') runSimulation();
+      if (tabId === 'admin') renderAdminPrices();
+      lucide.createIcons();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setLanguage(lang) {
+      ['en', 'hi', 'mr'].forEach(l => {
+        document.getElementById(`lang-${l}`).classList.remove('bg-white', 'text-agro-800', 'shadow-xs');
+        document.getElementById(`lang-${l}`).classList.add('text-slate-600');
+      });
+      document.getElementById(`lang-${lang}`).classList.add('bg-white', 'text-agro-800', 'shadow-xs');
+    }
+
+    // 4. STEPPER NAVIGATION
+    function goToStep(stepNum) {
+      state.currentStep = stepNum;
+      renderStepUI();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderStepUI() {
+      // Stepper Bar
+      const steps = [
+        { id: 1, name: '1. Crop' },
+        { id: 2, name: '2. Location' },
+        { id: 3, name: '3. Mandis' },
+        { id: 4, name: '4. AI Engine' },
+        { id: 5, name: '5. Best Rec' },
+        { id: 6, name: '6. Selling' },
+        { id: 7, name: '7. Tracking' },
+        { id: 8, name: '8. Dossier' }
+      ];
+
+      const stepperContainer = document.getElementById('stepper-bar');
+      stepperContainer.innerHTML = steps.map(s => `
+        <button onclick="goToStep(${s.id})" class="p-2 rounded-xl text-xs font-bold transition ${
+          s.id === state.currentStep ? 'bg-agro-600 text-white shadow-sm' : s.id < state.currentStep ? 'bg-agro-100 text-agro-800' : 'bg-slate-100 text-slate-400'
+        }">
+          ${s.name}
+        </button>
+      `).join('');
+
+      // Toggle container cards
+      [1, 2, 3, 5, 6, 7, 8].forEach(n => {
+        const el = document.getElementById(`step-${n}-card`);
+        if (el) el.classList.add('hidden');
+      });
+
+      if (state.currentStep === 1) renderStep1();
+      if (state.currentStep === 2) renderStep2();
+      if (state.currentStep === 3) renderStep3();
+      if (state.currentStep === 5) renderStep5();
+      if (state.currentStep === 6) renderStep6();
+      if (state.currentStep === 7) renderStep7();
+      if (state.currentStep === 8) renderStep8();
+
+      lucide.createIcons();
+    }
+
+    // STEP 1 RENDER
+    function renderStep1() {
+      document.getElementById('step-1-card').classList.remove('hidden');
+
+      // Crops Grid
+      const cropsGrid = document.getElementById('crops-selector-grid');
+      cropsGrid.innerHTML = CROPS.map(c => `
+        <button onclick="selectCrop('${c.id}')" class="p-3.5 rounded-2xl border text-left transition ${
+          state.cropId === c.id ? 'border-2 border-agro-600 bg-agro-50 shadow-md ring-2 ring-agro-200' : 'border-slate-200 hover:bg-slate-50'
+        }">
+          <div class="text-2xl mb-1">${c.icon}</div>
+          <div class="font-bold text-slate-900 text-sm">${c.name}</div>
+          <div class="text-[11px] text-slate-500">${c.hindiName}</div>
+          <div class="text-xs font-bold text-agro-700 mt-2">₹${c.basePrice}/q</div>
+        </button>
+      `).join('');
+
+      // Varieties
+      const currentCrop = CROPS.find(c => c.id === state.cropId);
+      const varGrid = document.getElementById('varieties-selector-grid');
+      varGrid.innerHTML = currentCrop.varieties.map(v => `
+        <button onclick="selectVariety('${v}')" class="px-3 py-2 rounded-xl border text-xs font-semibold text-left ${
+          state.variety === v ? 'border-agro-600 bg-agro-50 text-agro-900 ring-1 ring-agro-500 font-bold' : 'border-slate-200 text-slate-700'
+        }">
+          ${v}
+        </button>
+      `).join('');
+
+      // Grades
+      const gradeGrid = document.getElementById('grades-selector-grid');
+      gradeGrid.innerHTML = QUALITY_GRADES.map(g => `
+        <button onclick="selectGrade('${g.id}')" class="p-3.5 rounded-2xl border text-left ${
+          state.gradeId === g.id ? 'border-2 border-agro-600 bg-agro-50 shadow-md ring-2 ring-agro-200' : 'border-slate-200 hover:bg-slate-50'
+        }">
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">${g.badge}</span>
+          <h4 class="font-bold text-slate-900 text-sm mt-2">${g.name}</h4>
+          <p class="text-[11px] text-slate-500 mt-1">${g.desc}</p>
+        </button>
+      `).join('');
+    }
+
+    function selectCrop(id) {
+      state.cropId = id;
+      state.variety = CROPS.find(c => c.id === id).varieties[0];
+      renderStep1();
+    }
+    function selectVariety(v) { state.variety = v; renderStep1(); }
+    function selectGrade(id) { state.gradeId = id; renderStep1(); }
+    function handleQuantityChange(val) {
+      state.quantityQtl = Math.max(1, Number(val));
+      document.getElementById('input-quantity').value = state.quantityQtl;
+      document.getElementById('range-quantity').value = Math.min(200, state.quantityQtl);
+      document.getElementById('quantity-kg-equiv').innerText = `= ${(state.quantityQtl * 100).toLocaleString('en-IN')} kg`;
+    }
+    function setQuantityUnit(u) {
+      ['quintal', 'kg', 'ton'].forEach(unit => {
+        document.getElementById(`unit-btn-${unit}`).classList.remove('bg-white', 'text-agro-800', 'shadow-xs');
+        document.getElementById(`unit-btn-${unit}`).classList.add('text-slate-600');
+      });
+      document.getElementById(`unit-btn-${u}`).classList.add('bg-white', 'text-agro-800', 'shadow-xs');
+    }
+
+    // STEP 2 RENDER
+    function renderStep2() {
+      document.getElementById('step-2-card').classList.remove('hidden');
+      const origins = [
+        { name: 'Chandwad, Nashik (MH)', lat: 20.3256, lng: 74.2415 },
+        { name: 'Niphad, Nashik (MH)', lat: 20.0880, lng: 74.1100 },
+        { name: 'Baramati, Pune (MH)', lat: 18.1517, lng: 74.5771 },
+        { name: 'Sanwer, Indore (MP)', lat: 22.9772, lng: 75.8335 }
+      ];
+
+      document.getElementById('origin-selector-grid').innerHTML = origins.map(o => `
+        <button onclick="selectOrigin('${o.name}', ${o.lat}, ${o.lng})" class="p-3 rounded-xl border text-xs font-semibold text-left ${
+          state.origin.name === o.name ? 'border-2 border-agro-600 bg-agro-50 text-agro-900 font-bold' : 'border-slate-200 text-slate-700'
+        }">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 inline mr-1 text-agro-600"></i> ${o.name}
+        </button>
+      `).join('');
+
+      document.getElementById('vehicles-selector-grid').innerHTML = VEHICLES.map(v => `
+        <button onclick="selectVehicle('${v.id}')" class="p-3.5 rounded-2xl border text-left ${
+          state.vehicleId === v.id ? 'border-2 border-agro-600 bg-agro-50 shadow-md ring-2 ring-agro-200' : 'border-slate-200 hover:bg-slate-50'
+        }">
+          <div class="text-2xl mb-1">${v.icon}</div>
+          <h4 class="font-bold text-slate-900 text-sm">${v.name}</h4>
+          <p class="text-xs text-slate-500">Cap: ${v.capQtl} Qtl (${v.capQtl*100} kg)</p>
+          <div class="text-xs font-bold text-agro-700 mt-2">₹${v.rateKm} / km</div>
+        </button>
+      `).join('');
+    }
+
+    function selectOrigin(name, lat, lng) { state.origin = { name, lat, lng }; renderStep2(); }
+    function selectVehicle(id) { state.vehicleId = id; renderStep2(); }
+
+    // STEP 3 RENDER
+    function renderStep3() {
+      document.getElementById('step-3-card').classList.remove('hidden');
+      const crop = CROPS.find(c => c.id === state.cropId);
+      document.getElementById('raw-mandi-tbody').innerHTML = MANDIS.map(m => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-3 px-4 font-bold text-slate-900">${m.name}</td>
+          <td class="py-3 px-3">${m.district}, ${m.state}</td>
+          <td class="py-3 px-3 font-mono font-bold text-agro-800 text-sm">₹${crop.basePrice + (m.id === 'mandi-lasalgaon'?150:m.id==='mandi-pune'?200:0)}/q</td>
+          <td class="py-3 px-3 font-mono">${m.arrivals.toLocaleString('en-IN')} Qtl</td>
+          <td class="py-3 px-3 font-mono">${m.feePct}%</td>
+          <td class="py-3 px-3 font-mono">₹${m.handling}/q</td>
+        </tr>
+      `).join('');
+    }
+
+    // STEP 4 & 5: AI CALCULATION & RECOMMENDATIONS
+    function runAiEngine() {
+      const crop = CROPS.find(c => c.id === state.cropId);
+      const grade = QUALITY_GRADES.find(g => g.id === state.gradeId);
+      const vehicle = VEHICLES.find(v => v.id === state.vehicleId);
+      const trips = Math.ceil(state.quantityQtl / vehicle.capQtl) || 1;
+
+      const recs = MANDIS.map(m => {
+        // Distance approximation
+        const dlat = (m.lat - state.origin.lat) * 111;
+        const dlng = (m.lng - state.origin.lng) * 105;
+        const distKm = Math.max(15, Math.round(Math.sqrt(dlat*dlat + dlng*dlng) * 1.28));
+
+        let spotRate = crop.basePrice;
+        if (state.cropId === 'onion' && m.id === 'mandi-lasalgaon') spotRate = 2450;
+        if (state.cropId === 'onion' && m.id === 'mandi-pune') spotRate = 2500;
+
+        const effectiveRate = spotRate * grade.mult;
+        const gross = effectiveRate * state.quantityQtl;
+        const transport = distKm * vehicle.rateKm * trips + vehicle.base;
+        const fee = gross * (m.feePct / 100);
+        const handling = state.quantityQtl * m.handling;
+        const net = gross - transport - fee - handling;
+
+        return {
+          mandi: m,
+          distKm,
+          spotRate,
+          effectiveRate,
+          gross,
+          transport,
+          fee,
+          handling,
+          net: Math.round(net),
+          effectiveNetPerQtl: Math.round(net / state.quantityQtl),
+          trips
+        };
+      });
+
+      recs.sort((a, b) => b.net - a.net);
+      state.analysisResult = recs;
+      state.selectedMandiDeal = recs[0];
+      goToStep(5);
+    }
+
+    function renderStep5() {
+      document.getElementById('step-5-card').classList.remove('hidden');
+      const top = state.analysisResult[0];
+      const crop = CROPS.find(c => c.id === state.cropId);
+
+      // Hero Winner Card
+      document.getElementById('top-pick-hero').innerHTML = `
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="space-y-2">
+            <span class="bg-harvest-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase">🥇 Step 5: Top Recommended Market</span>
+            <h2 class="text-3xl sm:text-4xl font-black text-white">${top.mandi.name}</h2>
+            <p class="text-xs text-slate-300">${top.mandi.district}, ${top.mandi.state} &bull; Distance: <strong>${top.distKm} km</strong> &bull; Spot: <strong>₹${top.spotRate}/q</strong></p>
+          </div>
+          <div class="bg-white/10 backdrop-blur border border-white/20 p-5 rounded-2xl text-left lg:text-right">
+            <span class="text-xs font-bold text-agro-300 uppercase block">Estimated Net Return</span>
+            <div class="text-3xl sm:text-4xl font-black text-white mt-0.5">₹${top.net.toLocaleString('en-IN')}</div>
+            <span class="text-xs font-semibold text-emerald-400">₹${top.effectiveNetPerQtl}/qtl Net Take-Home</span>
+          </div>
+        </div>
+        <div class="mt-6 pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="text-xs text-slate-300">
+            <strong>AI Rationale:</strong> Optimal choice! Distance (${top.distKm} km) keeps transport to ₹${top.transport.toLocaleString('en-IN')}, maximizing your total take-home profit.
+          </div>
+          <button onclick="goToStep(6)" class="px-6 py-3 bg-harvest-500 hover:bg-harvest-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition">
+            Sell Crop Online (Step 6) &rarr;
+          </button>
+        </div>
+      `;
+
+      // Top 3 Grid
+      document.getElementById('top-3-grid').innerHTML = state.analysisResult.slice(0, 3).map((r, i) => `
+        <div class="bg-white rounded-2xl p-5 border ${i===0?'border-2 border-agro-600 ring-2 ring-agro-100 shadow-md':'border-slate-200'} space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black px-2 py-0.5 rounded-full ${i===0?'bg-agro-600 text-white':i===1?'bg-amber-100 text-amber-900':'bg-slate-100 text-slate-800'}">
+              ${i===0?'🥇 Best Option':i===1?'🥈 2nd Option':'🥉 3rd Option'}
+            </span>
+            <span class="text-xs text-slate-400 font-bold">${r.distKm} km</span>
+          </div>
+          <h4 class="font-bold text-slate-900 text-base">${r.mandi.name}</h4>
+          <div class="bg-slate-50 p-3 rounded-xl space-y-1 text-xs text-slate-600">
+            <div class="flex justify-between"><span>Gross:</span><span class="font-semibold text-slate-900">₹${r.gross.toLocaleString('en-IN')}</span></div>
+            <div class="flex justify-between text-red-600"><span>Transport:</span><span>-₹${r.transport.toLocaleString('en-IN')}</span></div>
+            <div class="flex justify-between text-red-600"><span>Mandi Cess:</span><span>-₹${Math.round(r.fee).toLocaleString('en-IN')}</span></div>
+            <div class="flex justify-between text-red-600"><span>Hamali:</span><span>-₹${r.handling.toLocaleString('en-IN')}</span></div>
+            <div class="flex justify-between pt-1 border-t font-bold text-agro-800 text-sm"><span>Net Return:</span><span>₹${r.net.toLocaleString('en-IN')}</span></div>
+          </div>
+          <button onclick="selectMandiDeal(${i})" class="w-full py-2 bg-agro-600 text-white rounded-xl font-bold text-xs hover:bg-agro-700">Choose ${r.mandi.name}</button>
+        </div>
+      `).join('');
+
+      // Gemini AI Box
+      document.getElementById('gemini-ai-box').innerHTML = `
+        <div class="flex items-center space-x-2 border-b border-white/10 pb-3">
+          <i data-lucide="bot" class="w-5 h-5 text-harvest-400"></i>
+          <div>
+            <h4 class="font-bold text-sm text-white">Google Gemini AI Market Intelligence</h4>
+            <p class="text-[10px] text-slate-400">Contextual recommendation for ${crop.name}</p>
+          </div>
+        </div>
+        <div class="bg-white/5 p-4 rounded-2xl border border-white/10 text-xs text-slate-200 leading-relaxed">
+          &ldquo;Our multi-factor scoring evaluates distance freight, handling fees, and market arrivals. While alternative mandis may advertise slightly higher rates, the travel overhead erodes net profit. <strong>${top.mandi.name}</strong> yields the maximum take-home profit of <strong>₹${top.net.toLocaleString('en-IN')}</strong>.&rdquo;
+        </div>
+      `;
+
+      // Chart.js render
+      renderPriceChart(top.spotRate);
+    }
+
+    function selectMandiDeal(idx) {
+      state.selectedMandiDeal = state.analysisResult[idx];
+      goToStep(6);
+    }
+
+    function renderPriceChart(baseRate) {
+      const ctx = document.getElementById('priceForecastChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Day -4', 'Day -3', 'Day -2', 'Day -1', 'Today', '+1d (ML)', '+2d (ML)', '+3d (ML)'],
+          datasets: [
+            {
+              label: 'Modal Price (₹/q)',
+              data: [baseRate-60, baseRate-40, baseRate-20, baseRate-10, baseRate, baseRate+30, baseRate+55, baseRate+80],
+              borderColor: '#16a34a',
+              backgroundColor: 'rgba(22, 163, 74, 0.1)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
+            x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+          }
+        }
+      });
+    }
+
+    // STEP 6: ONLINE SELLING SYSTEM
+    function renderStep6() {
+      document.getElementById('step-6-card').classList.remove('hidden');
+      const deal = state.selectedMandiDeal || state.analysisResult[0];
+      const crop = CROPS.find(c => c.id === state.cropId);
+      document.getElementById('deal-mandi-name').innerText = deal.mandi.name;
+
+      document.getElementById('buyers-selector-list').innerHTML = BUYERS.map((b, i) => `
+        <div class="p-3.5 rounded-2xl border ${i===0?'border-2 border-agro-600 bg-agro-50/70':'border-slate-200'} flex items-center justify-between">
+          <div>
+            <div class="flex items-center space-x-1.5 font-bold text-slate-900 text-xs">
+              <span>${b.name}</span>
+              <span class="bg-emerald-100 text-emerald-800 text-[9px] px-1 py-0.2 rounded">Verified</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-0.5">Lic: ${b.lic} &bull; Payment: ${b.speed}</p>
+          </div>
+          <span class="text-xs font-bold text-slate-800">★ ${b.rating}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('deal-ledger-box').innerHTML = `
+        <div class="flex justify-between"><span>Crop & Qty:</span><span class="font-bold text-slate-900">${crop.name} &bull; ${state.quantityQtl} Qtl</span></div>
+        <div class="flex justify-between"><span>Agreed Spot Rate:</span><span class="font-mono font-bold text-slate-900">₹${deal.spotRate}/q</span></div>
+        <div class="flex justify-between"><span>Gross Contract Value:</span><span class="font-bold text-slate-900">₹${deal.gross.toLocaleString('en-IN')}</span></div>
+        <div class="flex justify-between text-red-600"><span>Transport Deduction:</span><span>-₹${deal.transport.toLocaleString('en-IN')}</span></div>
+        <div class="flex justify-between text-red-600"><span>Mandi Fees & Cess:</span><span>-₹${Math.round(deal.fee).toLocaleString('en-IN')}</span></div>
+        <div class="flex justify-between text-red-600"><span>Hamali / Labor:</span><span>-₹${deal.handling.toLocaleString('en-IN')}</span></div>
+        <div class="flex justify-between pt-2 border-t font-black text-sm text-agro-800"><span>Net Farmer Payout:</span><span>₹${deal.net.toLocaleString('en-IN')}</span></div>
+      `;
+    }
+
+    function lockDealAndDispatch() {
+      const deal = state.selectedMandiDeal || state.analysisResult[0];
+      const crop = CROPS.find(c => c.id === state.cropId);
+      state.activeOrder = {
+        id: `AGRO-ORD-2026-${Math.floor(100 + Math.random()*900)}`,
+        cropName: crop.name,
+        quantityQtl: state.quantityQtl,
+        mandiName: deal.mandi.name,
+        netPayout: deal.net,
+        driverName: 'Rameshwar Patil',
+        driverPhone: '+91 97654 32100',
+        vehicleNo: 'MH 15 EG 4492',
+        otpCode: '4829',
+        status: 'IN_TRANSIT'
+      };
+      goToStep(7);
+    }
+
+    // STEP 7: LIVE DELIVERY TRACKING & OTP
+    function renderStep7() {
+      document.getElementById('step-7-card').classList.remove('hidden');
+      const ord = state.activeOrder;
+      document.getElementById('tracking-component-container').innerHTML = `
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-agro-950 text-white rounded-3xl p-6 shadow-xl space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span class="bg-agro-500/20 text-agro-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-agro-500/30">
+                Live GPS Delivery Tracking
+              </span>
+              <h3 class="text-2xl font-black text-white mt-1">${ord.cropName} &bull; ${ord.quantityQtl} Quintals</h3>
+              <p class="text-xs text-slate-300">To: <span class="text-agro-300 font-bold">${ord.mandiName}</span> &bull; Order #${ord.id}</p>
+            </div>
+            <div class="bg-white/10 p-4 rounded-2xl text-right">
+              <span class="text-[10px] uppercase font-bold text-agro-300">Guaranteed Escrow Payout</span>
+              <div class="text-2xl font-black text-white">₹${ord.netPayout.toLocaleString('en-IN')}</div>
+              <span class="text-xs text-emerald-400 font-bold">Escrow Locked &bull; Released on OTP</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-white/10 text-xs">
+            <div><span class="text-slate-400 block text-[10px]">Speed</span><span class="font-bold text-white">44 km/h</span></div>
+            <div><span class="text-slate-400 block text-[10px]">Distance Remaining</span><span class="font-bold text-white">18.4 km</span></div>
+            <div><span class="text-slate-400 block text-[10px]">Estimated Arrival</span><span class="font-bold text-white">28 Mins</span></div>
+            <div><span class="text-slate-400 block text-[10px]">Driver</span><span class="font-bold text-white">${ord.driverName}</span></div>
+          </div>
+        </div>
+
+        <!-- Milestones & OTP Card -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
+            <h4 class="font-bold text-slate-900 text-sm">Tracking Status Progression</h4>
+            <div class="space-y-3 text-xs pl-2 border-l-2 border-slate-200">
+              <div class="text-emerald-700 font-bold">✓ 1. Order Placed & Deal Locked</div>
+              <div class="text-emerald-700 font-bold">✓ 2. Transporter Picked Up at Farm Gate</div>
+              <div class="text-agro-700 font-black animate-pulse">🚚 3. In Transit (Live GPS Tracking via NH-752G)</div>
+              <div class="text-slate-400">○ 4. Mandi Gate Weighment Verification</div>
+              <div class="text-slate-400">○ 5. Delivered & Escrow Released (Pending OTP)</div>
+            </div>
+          </div>
+
+          <div class="bg-amber-50 p-6 rounded-3xl border border-amber-200 shadow-sm space-y-3">
+            <h4 class="font-bold text-amber-900 text-sm">Secure Payout OTP</h4>
+            <p class="text-xs text-amber-800">Share this 4-digit OTP upon physical delivery at the mandi to release full payout:</p>
+            <div class="p-3 bg-white rounded-xl border border-amber-300 text-center font-mono font-black text-2xl tracking-widest text-slate-900">
+              ${ord.otpCode}
+            </div>
+            <button onclick="confirmOtpSimulation()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl transition">
+              Verify OTP & Release ₹${ord.netPayout.toLocaleString('en-IN')}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function confirmOtpSimulation() {
+      alert(`OTP 4829 Verified successfully! ₹${state.activeOrder.netPayout.toLocaleString('en-IN')} has been credited to the farmer's bank account.`);
+    }
+
+    // STEP 8: PRINTABLE REPORT DOSSIER
+    function renderStep8() {
+      document.getElementById('step-8-card').classList.remove('hidden');
+      const top = state.analysisResult ? state.analysisResult[0] : null;
+      const crop = CROPS.find(c => c.id === state.cropId);
+
+      document.getElementById('dossier-print-container').innerHTML = `
+        <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-2xl space-y-6 max-w-4xl mx-auto">
+          <div class="flex items-center justify-between border-b-2 border-slate-900 pb-4">
+            <div>
+              <h2 class="text-2xl font-black text-slate-900">Agro<span class="text-harvest-600">Mark</span> Verified Dossier</h2>
+              <p class="text-xs text-slate-500">Autonomous Agricultural Optimization Protocol &bull; SIH-2026</p>
+            </div>
+            <button onclick="window.print()" class="px-4 py-2 bg-agro-600 text-white text-xs font-bold rounded-xl no-print">
+              Print / Save PDF
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-2xl text-xs">
+            <div><span class="text-slate-400 block">Commodity</span><span class="font-bold text-slate-900 text-sm">${crop.name}</span></div>
+            <div><span class="text-slate-400 block">Quantity</span><span class="font-bold text-slate-900 text-sm">${state.quantityQtl} Qtl</span></div>
+            <div><span class="text-slate-400 block">Top Mandi</span><span class="font-bold text-slate-900 text-sm">${top?top.mandi.name:'Lasalgaon APMC'}</span></div>
+            <div><span class="text-slate-400 block">Net Return</span><span class="font-black text-agro-800 text-sm">₹${top?top.net.toLocaleString('en-IN'):'1,19,795'}</span></div>
+          </div>
+
+          <div class="space-y-2">
+            <h4 class="font-bold text-slate-900 text-xs uppercase">Itemized Mandi Ledger</h4>
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 font-bold text-[10px]">
+                  <tr><th class="py-2 px-3">Mandi</th><th class="py-2 px-2">Dist</th><th class="py-2 px-2">Gross</th><th class="py-2 px-2 text-red-600">Freight</th><th class="py-2 px-3 text-agro-800 font-bold">Net Return</th></tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${(state.analysisResult||[]).slice(0, 4).map(r => `
+                    <tr>
+                      <td class="py-2 px-3 font-bold">${r.mandi.name}</td>
+                      <td class="py-2 px-2">${r.distKm} km</td>
+                      <td class="py-2 px-2 font-mono">₹${r.gross.toLocaleString('en-IN')}</td>
+                      <td class="py-2 px-2 font-mono text-red-600">-₹${r.transport.toLocaleString('en-IN')}</td>
+                      <td class="py-2 px-3 font-mono font-bold text-agro-800">₹${r.net.toLocaleString('en-IN')}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 5. WHAT-IF SIMULATOR
+    function runSimulation() {
+      const cropVal = document.getElementById('sim-crop').value;
+      const fuelVal = Number(document.getElementById('sim-fuel').value);
+      const qtyVal = Number(document.getElementById('sim-qty').value);
+
+      document.getElementById('sim-fuel-label').innerText = `${fuelVal>1?'+':''}${Math.round((fuelVal-1)*100)}%`;
+      document.getElementById('sim-qty-label').innerText = `${qtyVal} Qtl`;
+
+      const crop = CROPS.find(c => c.id === cropVal);
+      const baseTransport = 45 * 15 * Math.ceil(qtyVal/30) + 500;
+      const simTransport = Math.round(baseTransport * fuelVal);
+      const simGross = crop.basePrice * qtyVal;
+      const simNet = simGross - simTransport - (simGross * 0.01) - (qtyVal * 20);
+
+      document.getElementById('sim-output-container').innerHTML = `
+        <div class="bg-gradient-to-br from-slate-900 to-agro-950 text-white p-6 rounded-3xl shadow-xl space-y-3">
+          <span class="text-xs uppercase font-bold text-agro-300 block">Simulated Net Return Result</span>
+          <div class="text-3xl font-black text-white">₹${Math.round(simNet).toLocaleString('en-IN')}</div>
+          <p class="text-xs text-slate-300">Lasalgaon APMC &bull; Fuel Factor: ${fuelVal.toFixed(2)}x &bull; Freight: ₹${simTransport.toLocaleString('en-IN')}</p>
+        </div>
+        <div class="p-4 bg-agro-50 rounded-2xl border border-agro-100 text-xs text-agro-900 flex justify-between items-center">
+          <span>Ready to execute this harvest batch?</span>
+          <button onclick="showTab('flow')" class="px-4 py-2 bg-agro-600 hover:bg-agro-700 text-white font-bold rounded-xl shadow-xs">
+            Start Recommendation Flow &rarr;
+          </button>
+        </div>
+      `;
+    }
+
+    // 6. HERO LIVE DEMO CALCULATION
+    function updateHeroDemo(qty) {
+      const q = Number(qty);
+      document.getElementById('hero-qty-label').innerText = `${q} Quintals (${(q*100).toLocaleString('en-IN')} kg)`;
+      
+      const lasFreight = Math.round(45 * 12 * Math.ceil(q/30) + 400);
+      const lasGross = 2450 * q;
+      const lasNet = Math.round(lasGross - lasFreight - (lasGross*0.01) - (q*20));
+
+      const puneFreight = Math.round(210 * 14 * Math.ceil(q/30) + 600);
+      const puneGross = 2500 * q;
+      const puneNet = Math.round(puneGross - puneFreight - (puneGross*0.0125) - (q*25));
+
+      document.getElementById('hero-las-freight').innerText = `Freight: -₹${lasFreight.toLocaleString('en-IN')}`;
+      document.getElementById('hero-las-net').innerText = `₹${lasNet.toLocaleString('en-IN')}`;
+      document.getElementById('hero-pune-freight').innerText = `Freight: -₹${puneFreight.toLocaleString('en-IN')}`;
+      document.getElementById('hero-pune-net').innerText = `₹${puneNet.toLocaleString('en-IN')}`;
+      document.getElementById('hero-net-diff').innerText = `-₹${(lasNet - puneNet).toLocaleString('en-IN')} Lower Net`;
+    }
+
+    // 7. ORDERS HUB
+    function renderOrdersHub() {
+      const ord = state.activeOrder;
+      document.getElementById('orders-hub-container').innerHTML = `
+        <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex justify-between items-center border-b pb-3">
+            <div>
+              <span class="text-xs font-mono font-bold text-slate-400">#${ord.id}</span>
+              <h3 class="font-bold text-slate-900 text-base">${ord.cropName} &bull; ${ord.quantityQtl} Qtl</h3>
+            </div>
+            <span class="bg-harvest-100 text-harvest-800 text-xs font-bold px-2.5 py-1 rounded-full animate-pulse">In Transit</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div><span class="text-slate-400 block">Mandi</span><span class="font-bold">${ord.mandiName}</span></div>
+            <div><span class="text-slate-400 block">Driver</span><span class="font-bold">${ord.driverName}</span></div>
+            <div><span class="text-slate-400 block">Payout</span><span class="font-black text-agro-800">₹${ord.netPayout.toLocaleString('en-IN')}</span></div>
+            <div><span class="text-slate-400 block">OTP</span><span class="font-mono font-bold text-amber-700">${ord.otpCode}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 8. ADMIN PRICES
+    function renderAdminPrices() {
+      document.getElementById('admin-prices-list').innerHTML = CROPS.map(c => `
+        <div class="p-3.5 rounded-2xl border border-slate-200 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">${c.icon}</span>
+            <span class="font-bold text-xs text-slate-900">${c.name} (${c.hindiName})</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs text-slate-500 font-bold">Spot Rate:</span>
+            <input type="number" value="${c.basePrice}" onchange="updateCropPrice('${c.id}', this.value)" class="w-24 px-2 py-1 text-xs border rounded-lg font-mono font-bold text-right">
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateCropPrice(id, val) {
+      const c = CROPS.find(crop => crop.id === id);
+      if (c) c.basePrice = Number(val);
+      alert(`Updated spot rate for ${c.name} to ₹${val}/qtl`);
+    }
+
+    function adminSyncFeeds() {
+      alert('National Agmarknet Price API feeds successfully synchronized!');
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

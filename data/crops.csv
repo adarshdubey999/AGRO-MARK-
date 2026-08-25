@@ -1,0 +1,9 @@
+id,name,category,icon,default_unit,base_price
+onion,Onion (कांदा / प्याज),Vegetable,🧅,quintal,2400.00
+wheat,Wheat (गेहूं),Grain,🌾,quintal,2275.00
+rice,Paddy / Rice (धान),Grain,🍚,quintal,2183.00
+tomato,Tomato (टमाटर),Vegetable,🍅,quintal,1850.00
+potato,Potato (आलू),Vegetable,🥔,quintal,1600.00
+cotton,Cotton (कपास),Cash Crop,☁️,quintal,7020.00
+soybean,Soybean (सोयाबीन),Oilseed,🌱,quintal,4890.00
+maize,Maize (मक्का),Grain,🌽,quintal,2090.00

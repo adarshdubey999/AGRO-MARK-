@@ -1,0 +1,9 @@
+mandi_id,crop_id,price_per_quintal,min_price,max_price,arrival_volume_quintals,recorded_date
+mandi-lasalgaon,onion,2450.00,2300.00,2600.00,1200.0,2026-08-24
+mandi-nashik,onion,2350.00,2200.00,2500.00,950.0,2026-08-24
+mandi-pune,onion,2500.00,2350.00,2700.00,1800.0,2026-08-24
+mandi-pimpalgaon,onion,2410.00,2250.00,2550.00,800.0,2026-08-24
+mandi-azadpur,onion,2750.00,2500.00,3000.00,4500.0,2026-08-24
+mandi-indore,wheat,2380.00,2250.00,2490.00,2100.0,2026-08-24
+mandi-nashik,tomato,1920.00,1700.00,2100.00,750.0,2026-08-24
+mandi-pune,tomato,2050.00,1800.00,2250.00,1100.0,2026-08-24
