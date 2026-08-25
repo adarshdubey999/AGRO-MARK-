@@ -99,6 +99,14 @@ export default function RecommendationFlowPage({ currentLang = 'en' }) {
     }
   }, [selectedCropId])
 
+  useEffect(() => {
+    if (currentStep === 4 || currentStep === 5) {
+      if (!analysisResult) {
+        runAiAnalysis()
+      }
+    }
+  }, [currentStep])
+
   // Run AI Analysis Engine
   const runAiAnalysis = () => {
     setIsAnalyzing(true)
@@ -569,6 +577,19 @@ export default function RecommendationFlowPage({ currentLang = 'en' }) {
                 <span className="font-medium text-left">{factor}</span>
               </div>
             ))}
+          </div>
+
+          <div className="pt-2">
+            <button
+              onClick={() => {
+                if (!analysisResult) runAiAnalysis();
+                else setCurrentStep(5);
+              }}
+              className="inline-flex items-center px-6 py-3.5 bg-gradient-to-r from-agro-600 to-harvest-500 hover:from-agro-500 hover:to-harvest-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition"
+            >
+              <span>View Step 5: Best Market Recommendations</span>
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </button>
           </div>
         </div>
       )}
